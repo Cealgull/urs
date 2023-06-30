@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE file.
 
-package main
+package urs
 
 import (
 	"bufio"
@@ -16,8 +16,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
-
-	"github.com/btcsuite/btcec"
+	"github.com/btcsuite/btcd/btcec/v2"
 )
 
 // readLength is the length of a hash compression read in bytes.
@@ -64,7 +63,7 @@ func ReadKeyRing(filename string, kp *ecdsa.PrivateKey) (*PublicKeyRing, error) 
 
 	err = json.Unmarshal(f, &keyMap)
 	if err != nil {
-		str := fmt.Sprintf("json error: Couldn't unmarshall keyring file.", err)
+		str := fmt.Sprintf("json error: Couldn't unmarshall keyring file. %s ", err.Error())
 		jsonError := errors.New(str)
 		return nil, jsonError
 	}
@@ -80,12 +79,13 @@ func ReadKeyRing(filename string, kp *ecdsa.PrivateKey) (*PublicKeyRing, error) 
 			return nil, decodeError
 		}
 
-		pubkey, errParse := btcec.ParsePubKey(pkBytes, btcec.S256())
+		pubkey, errParse := btcec.ParsePubKey(pkBytes)
 		if errParse != nil {
 			return nil, errParse
 		}
 
-		ecdsaPubkey := ecdsa.PublicKey{pubkey.Curve, pubkey.X, pubkey.Y}
+
+		ecdsaPubkey := ecdsa.PublicKey{pubkey.ToECDSA().Curve, pubkey.X(), pubkey.Y()}
 
 		if kp == nil || !CmpPubKey(&kp.PublicKey, &ecdsaPubkey) {
 			kr.Add(ecdsaPubkey)
@@ -136,7 +136,7 @@ func ReadKeyPair(filename string) (*ecdsa.PrivateKey, error) {
 	}
 
 	// PrivKeyFromBytes doesn't return an error, so this could possibly be ugly.
-	privkeyBtcec, _ := btcec.PrivKeyFromBytes(btcec.S256(), privBytes)
+	privkeyBtcec, _ := btcec.PrivKeyFromBytes(privBytes)
 
 	pubBytes, errDecode := hex.DecodeString(keyMap["pubkey"])
 	if errDecode != nil {
@@ -144,17 +144,17 @@ func ReadKeyPair(filename string) (*ecdsa.PrivateKey, error) {
 		return nil, decodeError
 	}
 
-	pubkeyBtcec, errParse := btcec.ParsePubKey(pubBytes, btcec.S256())
+	pubkeyBtcec, errParse := btcec.ParsePubKey(pubBytes)
 	if errParse != nil {
 		return nil, errParse
 	}
 
 	// Assign the things to return
-	pubkey = &ecdsa.PublicKey{pubkeyBtcec.Curve,
-		pubkeyBtcec.X,
-		pubkeyBtcec.Y}
+	pubkey = &ecdsa.PublicKey{pubkeyBtcec.ToECDSA().Curve,
+		pubkeyBtcec.X(),
+		pubkeyBtcec.Y()}
 
-	privkey = &ecdsa.PrivateKey{*pubkey, privkeyBtcec.D}
+	privkey = &ecdsa.PrivateKey{*pubkey, privkeyBtcec.ToECDSA().D}
 
 	return privkey, nil
 }
