@@ -49,4 +49,4 @@ import "github.com/Cealgull/urs"
 
 ## Acknowledgements
 
-[Original Repo](github.com/monero-project/urs)
+[Original Repo](https://github.com/monero-project/urs)
