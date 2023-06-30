@@ -13,10 +13,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/btcsuite/btcd/btcec/v2"
 	"io/ioutil"
 	"os"
 	"strconv"
-	"github.com/btcsuite/btcd/btcec/v2"
 )
 
 // readLength is the length of a hash compression read in bytes.
@@ -84,7 +84,6 @@ func ReadKeyRing(filename string, kp *ecdsa.PrivateKey) (*PublicKeyRing, error) 
 			return nil, errParse
 		}
 
-
 		ecdsaPubkey := ecdsa.PublicKey{pubkey.ToECDSA().Curve, pubkey.X(), pubkey.Y()}
 
 		if kp == nil || !CmpPubKey(&kp.PublicKey, &ecdsaPubkey) {
@@ -104,9 +103,11 @@ func ReadKeyRing(filename string, kp *ecdsa.PrivateKey) (*PublicKeyRing, error) 
 
 // ReadKeyPair reads an ECDSA keypair a file in JSON object format.
 // Example JSON input:
-//  {
-//    "privkey": "..."
-//  }
+//
+//	{
+//	  "privkey": "..."
+//	}
+//
 // It also checks if a pubkey is in the keyring and, if not, appends it to the
 // keyring.
 func ReadKeyPair(filename string) (*ecdsa.PrivateKey, error) {

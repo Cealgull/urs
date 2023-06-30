@@ -15,13 +15,13 @@ import (
 //https://en.bitcoin.it/wiki/Base_58_Encoding
 //http://www.strongasanox.co.uk/2011/03/11/base58-encoding-in-python/
 
-//alphabet used by Bitcoins
+// alphabet used by Bitcoins
 var alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 
-//type to hold the Base58 string
+// type to hold the Base58 string
 type Base58 string
 
-//reverse alphabet used for quckly converting base58 strings into numbers
+// reverse alphabet used for quckly converting base58 strings into numbers
 var revalp = map[string]int{
 	"1": 0, "2": 1, "3": 2, "4": 3, "5": 4, "6": 5, "7": 6, "8": 7, "9": 8, "A": 9,
 	"B": 10, "C": 11, "D": 12, "E": 13, "F": 14, "G": 15, "H": 16, "J": 17, "K": 18, "L": 19,
@@ -47,7 +47,7 @@ func String2Hex(s string) []byte {
 	return answer
 }
 
-//Convert base58 to big.Int
+// Convert base58 to big.Int
 func (b Base58) ToBig() *big.Int {
 	answer := new(big.Int)
 	for i := 0; i < len(b); i++ {
@@ -57,7 +57,7 @@ func (b Base58) ToBig() *big.Int {
 	return answer
 }
 
-//convert base58 to int
+// convert base58 to int
 func (b Base58) ToInt() int {
 	answer := 0
 	for i := 0; i < len(b); i++ {
@@ -67,7 +67,7 @@ func (b Base58) ToInt() int {
 	return answer
 }
 
-//convert base58 to hex bytes
+// convert base58 to hex bytes
 func (b Base58) ToHex() []byte {
 	value := b.ToBig() //convert to big.Int
 	oneCount := 0
@@ -86,7 +86,7 @@ func (b Base58) Base582Big() *big.Int {
 	return answer
 }
 
-//convert base58 to int
+// convert base58 to int
 func (b Base58) Base582Int() int {
 	answer := 0
 	for i := 0; i < len(b); i++ {
@@ -96,12 +96,12 @@ func (b Base58) Base582Int() int {
 	return answer
 }
 
-//convert base58 to hex bytes
+// convert base58 to hex bytes
 func Base582Hex(b string) []byte {
 	return Base58(b).ToHex()
 }
 
-//convert base58 to hexes used by Bitcoins (keeping the zeroes on the front, 25 bytes long)
+// convert base58 to hexes used by Bitcoins (keeping the zeroes on the front, 25 bytes long)
 func (b Base58) BitHex() []byte {
 	value := b.ToBig() //convert to big.Int
 
@@ -118,7 +118,7 @@ func (b Base58) BitHex() []byte {
 	return answer
 }
 
-//encodes big.Int to base58 string
+// encodes big.Int to base58 string
 func Big2Base58(val *big.Int) Base58 {
 	answer := ""
 	valCopy := new(big.Int).Abs(val) //copies big.Int
@@ -140,7 +140,7 @@ func Big2Base58(val *big.Int) Base58 {
 	return Base58(answer) //returns
 }
 
-//encodes int to base58 string
+// encodes int to base58 string
 func Int2Base58(val int) Base58 {
 	answer := ""
 
@@ -164,7 +164,7 @@ func Int2Base58(val int) Base58 {
 	return Base58(answer) //returns
 }
 
-//encodes hex bytes into base58
+// encodes hex bytes into base58
 func Hex2Base58(val []byte) Base58 {
 	tmp := Big2Base58(Hex2Big(val)) //encoding of the number without zeroes in front
 
@@ -189,7 +189,7 @@ func Hex2Base58Str(val []byte) string {
 	return string(Hex2Base58(val))
 }
 
-//encodes string stored hex bytes into base58
+// encodes string stored hex bytes into base58
 func StringHex2Base58(val string) Base58 {
 	tmp := Big2Base58(Hex2Big(String2Hex(val))) //encoding of the number without zeroes in front
 
@@ -228,7 +228,7 @@ func Str2Hex58(val string) Base58 {
 	return String2Base58(val)
 }
 
-//TODO: do and test everything
+// TODO: do and test everything
 func TestBase58() {
 
 }
