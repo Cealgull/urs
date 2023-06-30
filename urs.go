@@ -435,6 +435,8 @@ func Sign(rand io.Reader,
 
 	var id int
 	var wg sync.WaitGroup
+	var mtx sync.Mutex
+
 	sum := new(big.Int).SetInt64(0)
 	for j := 0; j < s; j++ {
 		wg.Add(1)
@@ -464,8 +466,10 @@ func Sign(rand io.Reader,
 				w.Add(w, t[j])
 				w.Mod(w, N)
 				bx[j], by[j] = curve.ScalarMult(hx, hy, w.Bytes()) // H(mR)^(xi*cj+tj)
-				// TODO may need to lock on sum object.
+
+				mtx.Lock()
 				sum.Add(sum, c[j]) // Sum needed in Step 3 of the algorithm
+				mtx.Unlock()
 			}
 		}(j)
 	}
